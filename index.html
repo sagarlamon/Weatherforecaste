@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Weather Forecast</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for gradient background, glowing button, and progress bar */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); /* Beautiful gradient background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px; /* Add some padding for smaller screens */
+            box-sizing: border-box;
+        }
+
+        /* Glassmorphism effect for the card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15); /* Semi-transparent white background */
+            backdrop-filter: blur(10px); /* Blur effect */
+            -webkit-backdrop-filter: blur(10px); /* Safari support */
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Light border */
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); /* Soft shadow */
+        }
+
+        /* Glowing button effect */
+        .glowing-button {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .glowing-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            transform: rotate(45deg);
+            transition: all 0.7s ease;
+            opacity: 0;
+        }
+
+        .glowing-button:hover::before {
+            transform: rotate(0deg);
+            opacity: 1;
+        }
+
+        .glowing-button:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 255, 255, 0.4), 0 0 45px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Animated progress bar */
+        .progress-bar-fill {
+            width: 0%;
+            transition: width 0.5s ease-in-out; /* Smooth transition for width changes */
+        }
+
+        /* Classic pulse animation */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .animate-pulse-custom {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="glass-card p-8 md:p-12 rounded-xl text-center max-w-md w-full mx-auto">
+        <h1 class="text-3xl md:text-4xl font-bold text-white mb-6">AI Weather Forecast</h1>
+
+        <div class="mb-6">
+            <input
+                type="text"
+                id="locationInput"
+                placeholder="Enter your location"
+                class="w-full p-3 md:p-4 rounded-lg bg-white bg-opacity-20 border border-white border-opacity-30 text-white placeholder-white placeholder-opacity-70 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition duration-300"
+            >
+        </div>
+
+        <button
+            id="checkWeatherBtn"
+            class="glowing-button w-full py-3 md:py-4 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 mb-6"
+        >
+            Check Weather
+        </button>
+
+        <div id="progressBarContainer" class="hidden w-full bg-gray-700 bg-opacity-50 rounded-full h-3 mb-4 overflow-hidden">
+            <div id="progressBarFill" class="progress-bar-fill h-full bg-green-400 rounded-full"></div>
+        </div>
+
+        <p id="statusMessage" class="text-white text-lg md:text-xl mb-4 min-h-[1.5em]"></p>
+        <p id="finalMessage" class="text-white text-2xl md:text-3xl font-semibold hidden">idk, just look outside!</p>
+
+        <!-- Added "MADE BY SAGAR" with animation -->
+        <p class="text-white text-sm mt-6 opacity-70 animate-pulse-custom">MADE BY SAGAR</p>
+    </div>
+
+    <script>
+        // Get references to HTML elements
+        const locationInput = document.getElementById('locationInput');
+        const checkWeatherBtn = document.getElementById('checkWeatherBtn');
+        const progressBarContainer = document.getElementById('progressBarContainer');
+        const progressBarFill = document.getElementById('progressBarFill');
+        const statusMessage = document.getElementById('statusMessage');
+        const finalMessage = document.getElementById('finalMessage');
+
+        // Define the sequence of messages and their delays
+        const forecastSteps = [
+            { message: 'Searching location...', delay: 2700, progress: 25 },
+            { message: 'Analyzing the clouds...', delay: 2700, progress: 50 },
+            { message: 'Looking outside your window...', delay: 3000, progress: 75 },
+            { message: 'Gathering last information...', delay: 1000, progress: 100 }
+        ];
+
+        // Event listener for the "Check Weather" button
+        checkWeatherBtn.addEventListener('click', () => {
+            // Reset UI state
+            statusMessage.textContent = '';
+            finalMessage.classList.add('hidden');
+            progressBarContainer.classList.remove('hidden');
+            progressBarFill.style.width = '0%';
+            locationInput.disabled = true;
+            checkWeatherBtn.disabled = true;
+
+            let currentDelay = 0; // Accumulate delay for sequential timeouts
+
+            // Loop through each forecast step
+            forecastSteps.forEach((step, index) => {
+                currentDelay += step.delay; // Add current step's delay to total
+
+                setTimeout(() => {
+                    statusMessage.textContent = step.message; // Update status message
+                    progressBarFill.style.width = `${step.progress}%`; // Update progress bar width
+
+                    // If it's the last step, display the final message and reset
+                    if (index === forecastSteps.length - 1) {
+                        setTimeout(() => {
+                            progressBarContainer.classList.add('hidden');
+                            statusMessage.textContent = '';
+                            finalMessage.classList.remove('hidden');
+                            locationInput.disabled = false;
+                            checkWeatherBtn.disabled = false;
+                            // Optional: Clear input field after forecast
+                            // locationInput.value = '';
+                        }, 500); // Small delay before hiding progress bar and showing final message
+                    }
+                }, currentDelay);
+            });
+        });
+
+        // Personalization: Reminder for library trip
+        // Check if it's a library day or if the user has mentioned going to the library
+        // This is a placeholder for actual logic, as the model doesn't know the user's schedule.
+        // For demonstration, let's assume a generic reminder can be triggered.
+        window.onload = () => {
+            // This is a simple example. In a real app, you'd have more sophisticated logic
+            // to determine if the user is going to the library.
+            // For now, let's just add a console log as a reminder.
+            console.log("Remember to bring your water bottle and some good wishes to the library! शुभकामनाएँ!");
+        };
+    </script>
+</body>
+</html>
