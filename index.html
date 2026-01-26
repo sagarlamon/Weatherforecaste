@@ -275,7 +275,7 @@
                 </div>
                 
                 <!-- Stats -->
-                <div class="flex gap-6 mt-8 pt-6 border-t border-[var(--border)]">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mt-8 pt-6 border-t border-[var(--border)]">
                     <div>
                         <p class="text-tertiary text-xs uppercase tracking-wide mb-1">Feels like</p>
                         <p class="text-primary text-lg font-medium"><span id="feelsLike">--</span>°</p>
@@ -289,10 +289,10 @@
                         <p class="text-primary text-lg font-medium"><span id="windSpeed">--</span> <span class="text-sm text-secondary font-normal">km/h</span></p>
                     </div>
                     <div>
-                        <p class="text-tertiary text-xs uppercase tracking-wide mb-1">AQI</p>
-                        <p class="text-primary text-lg font-medium flex items-center gap-2">
+                        <p class="text-tertiary text-xs uppercase tracking-wide mb-1">Air Quality</p>
+                        <p class="text-primary text-lg font-medium flex items-center gap-2 flex-wrap">
                             <span id="aqiValue">--</span>
-                            <span class="aqi-badge text-xs px-2 py-0.5 rounded-full font-medium" id="aqiBadge">--</span>
+                            <span class="aqi-badge text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full font-medium whitespace-nowrap" id="aqiBadge">--</span>
                         </p>
                     </div>
                 </div>
