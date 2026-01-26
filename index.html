@@ -150,31 +150,48 @@
 
         /* Suggestion items */
         .suggestion-item {
-            padding: 12px 16px;
+            padding: 14px 16px;
             cursor: pointer;
             transition: background-color 0.15s ease;
             border-bottom: 1px solid var(--border);
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            touch-action: manipulation;
         }
 
         .suggestion-item:last-child {
             border-bottom: none;
         }
 
-        .suggestion-item:hover,
+        .suggestion-item:hover {
+            background-color: var(--bg-tertiary);
+        }
+        
+        .suggestion-item:active,
         .suggestion-item.active {
             background-color: var(--bg-tertiary);
         }
 
+        /* Touch feedback for mobile */
+        @media (hover: none) and (pointer: coarse) {
+            .suggestion-item:active {
+                background-color: var(--bg-tertiary);
+                transform: scale(0.98);
+            }
+        }
+
         .suggestion-item .city-name {
             color: var(--text-primary);
-            font-size: 0.875rem;
+            font-size: 0.9375rem;
             font-weight: 500;
+            pointer-events: none;
         }
 
         .suggestion-item .city-detail {
             color: var(--text-tertiary);
-            font-size: 0.75rem;
-            margin-top: 2px;
+            font-size: 0.8125rem;
+            margin-top: 3px;
+            pointer-events: none;
         }
 
         /* AQI Badge Colors */
@@ -671,18 +688,35 @@
             suggestionsListEl.innerHTML = suggestions.map((loc, index) => {
                 const region = [loc.admin1, loc.country].filter(Boolean).join(', ');
                 return `
-                    <div class="suggestion-item" data-index="${index}">
+                    <div class="suggestion-item" data-index="${index}" role="option" tabindex="0">
                         <div class="city-name">${loc.name}</div>
                         ${region ? `<div class="city-detail">${region}</div>` : ''}
                     </div>
                 `;
             }).join('');
 
-            // Add click handlers
+            // Add click and touch handlers
             suggestionsListEl.querySelectorAll('.suggestion-item').forEach(item => {
-                item.addEventListener('click', () => {
+                // Mouse click
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     const idx = parseInt(item.dataset.index);
                     selectSuggestion(suggestions[idx]);
+                });
+                
+                // Touch support for mobile
+                item.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const idx = parseInt(item.dataset.index);
+                    selectSuggestion(suggestions[idx]);
+                });
+
+                // Mouse hover highlight
+                item.addEventListener('mouseenter', () => {
+                    selectedIndex = parseInt(item.dataset.index);
+                    updateSuggestionHighlight();
                 });
             });
 
