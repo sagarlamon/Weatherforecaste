@@ -223,6 +223,115 @@
             background: rgba(220, 38, 38, 0.2);
             color: #fca5a5;
         }
+
+        /* Skeleton Animation */
+        @keyframes skeleton-shimmer {
+            0% { background-color: var(--bg-tertiary); opacity: 0.6; }
+            50% { background-color: var(--border); opacity: 0.8; }
+            100% { background-color: var(--bg-tertiary); opacity: 0.6; }
+        }
+        .skeleton {
+            animation: skeleton-shimmer 1.5s infinite ease-in-out;
+        }
+
+        /* Dynamic Weather Backgrounds */
+        body.bg-clear-day { background: linear-gradient(135deg, #fef3c7 0%, #e0f2fe 100%) !important; }
+        body.bg-clear-night { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%) !important; }
+        body.bg-cloudy-day { background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important; }
+        body.bg-cloudy-night { background: linear-gradient(135deg, #18181b 0%, #27272a 100%) !important; }
+        body.bg-rainy-day { background: linear-gradient(135deg, #e0f2fe 0%, #cbd5e1 100%) !important; }
+        body.bg-rainy-night { background: linear-gradient(135deg, #0f172a 0%, #0f172a 70%, #1e293b 100%) !important; }
+        body.bg-thunder-day { background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 50%, #d8b4fe 100%) !important; }
+        body.bg-thunder-night { background: linear-gradient(135deg, #090514 0%, #180f2b 100%) !important; }
+        body.bg-snowy-day { background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%) !important; }
+        body.bg-snowy-night { background: linear-gradient(135deg, #0f172a 0%, #38bdf8 100%) !important; }
+
+        /* Favorite Star active state */
+        .favorite-active svg {
+            fill: #fbbf24 !important;
+            stroke: #d97706 !important;
+        }
+
+        /* Location Badges Styles */
+        .location-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow);
+            color: var(--text-primary);
+        }
+        .location-badge:hover {
+            border-color: var(--text-tertiary);
+            transform: translateY(-1px);
+        }
+        .location-badge .remove-btn {
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: color 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 9999px;
+        }
+        .location-badge .remove-btn:hover {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* Chart SVG elements styles */
+        .chart-line {
+            fill: none;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 2s forwards ease-in-out;
+        }
+        .chart-area {
+            opacity: 0.15;
+            transform-origin: bottom;
+            animation: fadeIn 1s forwards ease-in-out;
+        }
+        .chart-point {
+            transition: r 0.15s ease;
+            cursor: pointer;
+        }
+        .chart-point:hover {
+            r: 5.5;
+        }
+        .chart-grid {
+            stroke: var(--border);
+            stroke-width: 1;
+            stroke-dasharray: 4 4;
+        }
+        .chart-label {
+            font-size: 10px;
+            fill: var(--text-secondary);
+            font-weight: 500;
+        }
+        .chart-temp-label {
+            font-size: 11px;
+            fill: var(--text-primary);
+            font-weight: 600;
+        }
+
+        @keyframes drawLine {
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 0.15; }
+        }
     </style>
 </head>
 <body class="light">
@@ -242,7 +351,7 @@
         </header>
 
         <!-- Search -->
-        <div class="flex gap-2 mb-8 fade-up fade-up-delay-1">
+        <div class="flex gap-2 mb-8 fade-up fade-up-delay-1 relative z-50">
             <div class="flex-1 relative">
                 <input type="text" id="searchInput" placeholder="Search city..." 
                     class="input-field w-full rounded-xl py-3 px-4 text-sm" autocomplete="off">
@@ -264,9 +373,39 @@
             </button>
         </div>
 
-        <!-- Loading -->
-        <div id="loading" class="hidden py-20 text-center">
-            <div class="inline-block w-6 h-6 border-2 border-current border-t-transparent rounded-full animate-spin text-tertiary"></div>
+        <!-- Loading (Skeleton Loader) -->
+        <div id="loading" class="hidden space-y-6 fade-up">
+            <!-- Main Stats Skeleton -->
+            <div class="card rounded-2xl p-6 space-y-6">
+                <div class="flex justify-between items-start">
+                    <div class="space-y-3 flex-grow">
+                        <div class="h-4 bg-tertiary rounded w-1/3 skeleton"></div>
+                        <div class="h-14 bg-tertiary rounded w-1/2 skeleton"></div>
+                        <div class="h-4 bg-tertiary rounded w-1/4 skeleton"></div>
+                    </div>
+                    <div class="w-16 h-16 bg-tertiary rounded-2xl skeleton"></div>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-6 border-t border-[var(--border)]">
+                    <div class="space-y-2"><div class="h-3 bg-tertiary rounded w-2/3 skeleton"></div><div class="h-5 bg-tertiary rounded w-1/2 skeleton"></div></div>
+                    <div class="space-y-2"><div class="h-3 bg-tertiary rounded w-2/3 skeleton"></div><div class="h-5 bg-tertiary rounded w-1/2 skeleton"></div></div>
+                    <div class="space-y-2"><div class="h-3 bg-tertiary rounded w-2/3 skeleton"></div><div class="h-5 bg-tertiary rounded w-1/2 skeleton"></div></div>
+                    <div class="space-y-2"><div class="h-3 bg-tertiary rounded w-2/3 skeleton"></div><div class="h-5 bg-tertiary rounded w-1/2 skeleton"></div></div>
+                </div>
+            </div>
+            <!-- Trend Chart Skeleton -->
+            <div class="card rounded-2xl p-6 space-y-4">
+                <div class="h-3 bg-tertiary rounded w-1/4 skeleton"></div>
+                <div class="h-28 bg-tertiary rounded skeleton"></div>
+            </div>
+            <!-- Hourly List Skeleton -->
+            <div class="flex gap-2 overflow-x-auto pb-2">
+                <div class="card-flat py-3 px-4 rounded-xl min-w-[70px] space-y-2 skeleton flex-shrink-0 h-24"></div>
+                <div class="card-flat py-3 px-4 rounded-xl min-w-[70px] space-y-2 skeleton flex-shrink-0 h-24"></div>
+                <div class="card-flat py-3 px-4 rounded-xl min-w-[70px] space-y-2 skeleton flex-shrink-0 h-24"></div>
+                <div class="card-flat py-3 px-4 rounded-xl min-w-[70px] space-y-2 skeleton flex-shrink-0 h-24"></div>
+                <div class="card-flat py-3 px-4 rounded-xl min-w-[70px] space-y-2 skeleton flex-shrink-0 h-24"></div>
+                <div class="card-flat py-3 px-4 rounded-xl min-w-[70px] space-y-2 skeleton flex-shrink-0 h-24"></div>
+            </div>
         </div>
 
         <!-- Error -->
@@ -281,7 +420,14 @@
             <div class="card rounded-2xl p-6 fade-up">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-secondary text-sm mb-1" id="locationName">--</p>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-secondary text-sm" id="locationName">--</span>
+                            <button id="favoriteBtn" onclick="toggleFavoriteCurrent()" class="text-tertiary hover:text-amber-500 transition-colors focus:outline-none flex items-center justify-center" title="Pin city">
+                                <svg class="w-4.5 h-4.5 fill-none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499c.195-.4.57-.65 1.02-.65.45 0 .825.25 1.02.65l2.63 5.325 5.877.855c.442.064.81.36.96.79.152.428.053.9-.25 1.222l-4.252 4.14 1.002 5.857c.076.444-.108.895-.472 1.154a1.096 1.096 0 01-1.114.074L12 18.254l-5.26 2.766a1.095 1.095 0 01-1.115-.074.992.992 0 01-.472-1.154l1.002-5.857-4.252-4.14a1.098 1.098 0 01-.251-1.222.988.988 0 01.96-.79l5.878-.855 2.63-5.325z"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="flex items-baseline gap-1">
                             <span class="text-6xl md:text-7xl font-light text-primary" id="currentTemp">--</span>
                             <span class="text-2xl text-tertiary font-light">°</span>
@@ -312,6 +458,35 @@
                             <span class="aqi-badge text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full font-medium whitespace-nowrap" id="aqiBadge">--</span>
                         </p>
                     </div>
+                    <div>
+                        <p class="text-tertiary text-xs uppercase tracking-wide mb-1">Precipitation</p>
+                        <p class="text-primary text-lg font-medium"><span id="precipitation">--</span> <span class="text-sm text-secondary font-normal">mm</span></p>
+                    </div>
+                    <div>
+                        <p class="text-tertiary text-xs uppercase tracking-wide mb-1">UV Index</p>
+                        <p class="text-primary text-lg font-medium flex items-center gap-2 flex-wrap">
+                            <span id="uvIndex">--</span>
+                            <span class="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full font-medium whitespace-nowrap hidden" id="uvBadge">--</span>
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-tertiary text-xs uppercase tracking-wide mb-1">Sunrise</p>
+                        <p class="text-primary text-lg font-medium" id="sunriseTime">--</p>
+                    </div>
+                    <div>
+                        <p class="text-tertiary text-xs uppercase tracking-wide mb-1">Sunset</p>
+                        <p class="text-primary text-lg font-medium" id="sunsetTime">--</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hourly Chart -->
+            <div class="card rounded-2xl p-6 fade-up fade-up-delay-1 hidden" id="hourlyChartContainer">
+                <p class="text-tertiary text-xs uppercase tracking-wide mb-4">Temperature Trend</p>
+                <div class="w-full overflow-x-auto custom-scroll">
+                    <div class="min-w-[600px] h-40 relative" id="tempChartWrapper">
+                        <svg class="w-full h-full" id="tempChartSvg" viewBox="0 0 600 150"></svg>
+                    </div>
                 </div>
             </div>
 
@@ -329,16 +504,28 @@
         </div>
 
         <!-- Initial State -->
-        <div id="initialState" class="text-center py-20 fade-up">
+        <div id="initialState" class="text-center py-16 fade-up">
             <p class="text-5xl mb-4">🌤️</p>
             <p class="text-secondary text-sm mb-6">Search a city or use your location</p>
-            <button onclick="getLocation()" class="btn px-5 py-2.5 rounded-xl text-sm inline-flex items-center gap-2">
+            <button onclick="getLocation()" class="btn px-5 py-2.5 rounded-xl text-sm inline-flex items-center gap-2 mb-8">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
                 </svg>
                 Use location
             </button>
+
+            <!-- Favorites and Recents -->
+            <div id="savedLocations" class="max-w-md mx-auto px-4 mt-6 text-left hidden">
+                <div id="favoritesContainer" class="mb-6">
+                    <p class="text-tertiary text-xs uppercase tracking-wide mb-2">Pinned Cities</p>
+                    <div id="favoritesList" class="flex flex-wrap gap-2"></div>
+                </div>
+                <div id="recentsContainer">
+                    <p class="text-tertiary text-xs uppercase tracking-wide mb-2">Recent Searches</p>
+                    <div id="recentsList" class="flex flex-wrap gap-2"></div>
+                </div>
+            </div>
         </div>
 
         <!-- Footer / Data Sources -->
@@ -382,9 +569,13 @@
     </div>
 
     <script>
-        // Theme Toggle
+        // State variables
         let isDark = localStorage.getItem('theme') === 'dark';
-        
+        let currentCity = { name: '', lat: null, lon: null };
+        let currentWeatherCode = 0;
+        let currentIsDay = 1;
+        let currentHourlyData = null;
+
         function applyTheme() {
             document.body.classList.toggle('dark', isDark);
             document.body.classList.toggle('light', !isDark);
@@ -395,11 +586,18 @@
             isDark = !isDark;
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             applyTheme();
+            if (currentCity.name && !document.getElementById('weatherContent').classList.contains('hidden')) {
+                const useDayGradient = !isDark;
+                updateBackgroundGradient(currentWeatherCode, useDayGradient);
+                if (currentHourlyData) {
+                    drawTemperatureChart(currentHourlyData);
+                }
+            }
         }
         
         applyTheme();
 
-        // Weather codes
+        // Weather codes mapping
         const weatherCodes = {
             0: { desc: 'Clear', icon: '☀️' },
             1: { desc: 'Mostly clear', icon: '🌤️' },
@@ -427,6 +625,34 @@
             99: { desc: 'Thunderstorm', icon: '⛈️' },
         };
 
+        const weatherGradientClasses = [
+            'bg-clear-day', 'bg-clear-night',
+            'bg-cloudy-day', 'bg-cloudy-night',
+            'bg-rainy-day', 'bg-rainy-night',
+            'bg-thunder-day', 'bg-thunder-night',
+            'bg-snowy-day', 'bg-snowy-night'
+        ];
+
+        function getBackgroundClass(code, isDay) {
+            const timeSuffix = isDay ? 'day' : 'night';
+            if ([0, 1].includes(code)) return `bg-clear-${timeSuffix}`;
+            if ([2, 3, 45, 48].includes(code)) return `bg-cloudy-${timeSuffix}`;
+            if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) return `bg-rainy-${timeSuffix}`;
+            if ([71, 73, 75, 77, 85, 86].includes(code)) return `bg-snowy-${timeSuffix}`;
+            if ([95, 96, 99].includes(code)) return `bg-thunder-${timeSuffix}`;
+            return `bg-clear-${timeSuffix}`;
+        }
+
+        function updateBackgroundGradient(code, isDay) {
+            document.body.classList.remove(...weatherGradientClasses);
+            const gradientClass = getBackgroundClass(code, isDay);
+            document.body.classList.add(gradientClass);
+        }
+
+        function resetBackground() {
+            document.body.classList.remove(...weatherGradientClasses);
+        }
+
         function showLoading() {
             document.getElementById('loading').classList.remove('hidden');
             document.getElementById('error').classList.add('hidden');
@@ -435,6 +661,7 @@
         }
 
         function showError(message) {
+            resetBackground();
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('error').classList.remove('hidden');
             document.getElementById('weatherContent').classList.add('hidden');
@@ -472,7 +699,9 @@
                 
                 if (data.results?.length > 0) {
                     const loc = data.results[0];
-                    fetchWeather(loc.latitude, loc.longitude, `${loc.name}, ${loc.country}`);
+                    const fullName = `${loc.name}, ${loc.country}`;
+                    addToRecent({ name: fullName, lat: loc.latitude, lon: loc.longitude });
+                    fetchWeather(loc.latitude, loc.longitude, fullName);
                 } else {
                     showError('City not found');
                 }
@@ -483,7 +712,7 @@
 
         async function fetchWeather(lat, lon, locationName = null) {
             try {
-                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
+                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m,precipitation&hourly=temperature_2m,weather_code,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max&timezone=auto`;
                 const aqiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi,pm2_5,pm10`;
                 
                 const [weatherRes, aqiRes] = await Promise.all([
@@ -505,9 +734,26 @@
                     }
                 }
 
+                currentCity = { name: locationName, lat, lon };
+                currentWeatherCode = weatherData.current.weather_code;
+                currentIsDay = weatherData.current.is_day;
+
+                // Sync Favorite star state
+                const favoriteBtn = document.getElementById('favoriteBtn');
+                if (isFavorite(locationName)) {
+                    favoriteBtn.classList.add('favorite-active');
+                } else {
+                    favoriteBtn.classList.remove('favorite-active');
+                }
+
+                // Dynamic background gradient
+                const useDayGradient = !isDark;
+                updateBackgroundGradient(currentWeatherCode, useDayGradient);
+
                 updateUI(weatherData, aqiData, locationName);
                 showWeather();
-            } catch {
+            } catch (err) {
+                console.error(err);
                 showError('Failed to load weather');
             }
         }
@@ -519,6 +765,108 @@
             if (aqi <= 200) return { label: 'Unhealthy', class: 'aqi-unhealthy' };
             if (aqi <= 300) return { label: 'Very Bad', class: 'aqi-very-unhealthy' };
             return { label: 'Hazardous', class: 'aqi-hazardous' };
+        }
+
+        function getUVInfo(uv) {
+            if (uv <= 2) return { label: 'Low', class: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' };
+            if (uv <= 5) return { label: 'Mod', class: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' };
+            if (uv <= 7) return { label: 'High', class: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400' };
+            if (uv <= 10) return { label: 'Very High', class: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' };
+            return { label: 'Extreme', class: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400' };
+        }
+
+        function formatTimeString(isoString) {
+            if (!isoString) return '--';
+            try {
+                const date = new Date(isoString);
+                return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+            } catch {
+                return '--';
+            }
+        }
+
+        function drawTemperatureChart(points) {
+            const svg = document.getElementById('tempChartSvg');
+            if (!svg) return;
+            
+            svg.innerHTML = '';
+            
+            if (!points || points.length === 0) return;
+            
+            const temps = points.map(p => p.temp);
+            const maxTemp = Math.max(...temps);
+            const minTemp = Math.min(...temps);
+            const tempRange = maxTemp - minTemp || 1;
+            
+            const width = 600;
+            const height = 150;
+            const paddingLeft = 45;
+            const paddingRight = 45;
+            const paddingTop = 30;
+            const paddingBottom = 30;
+            
+            const chartWidth = width - paddingLeft - paddingRight;
+            const chartHeight = height - paddingTop - paddingBottom;
+            
+            const coords = points.map((p, idx) => {
+                const x = paddingLeft + idx * (chartWidth / (points.length - 1));
+                const y = paddingTop + chartHeight - ((p.temp - minTemp) / tempRange) * chartHeight;
+                return { x, y, temp: p.temp, time: p.time, precip: p.precipProb };
+            });
+            
+            const isDarkTheme = document.body.classList.contains('dark');
+            const strokeColor = isDarkTheme ? '#38bdf8' : '#0284c7';
+            const areaStartColor = isDarkTheme ? '#38bdf8' : '#0284c7';
+            
+            let defs = `
+                <defs>
+                    <linearGradient id="chartAreaGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="${areaStartColor}" stop-opacity="0.3"/>
+                        <stop offset="100%" stop-color="${areaStartColor}" stop-opacity="0.0"/>
+                    </linearGradient>
+                </defs>
+            `;
+            svg.innerHTML += defs;
+            
+            let gridLines = '';
+            let labels = '';
+            coords.forEach((c, idx) => {
+                gridLines += `<line x1="${c.x}" y1="${paddingTop}" x2="${c.x}" y2="${height - paddingBottom}" class="chart-grid" />`;
+                
+                const hourStr = idx === 0 ? 'Now' : c.time.toLocaleTimeString([], { hour: 'numeric' });
+                labels += `<text x="${c.x}" y="${height - 8}" text-anchor="middle" class="chart-label">${hourStr}</text>`;
+                
+                if (c.precip > 0) {
+                    labels += `<text x="${c.x}" y="${height - 20}" text-anchor="middle" class="chart-label" fill="#38bdf8" style="font-size: 8px; font-weight: 600;">💧${c.precip}%</text>`;
+                }
+                
+                labels += `<text x="${c.x}" y="${c.y - 8}" text-anchor="middle" class="chart-temp-label">${c.temp}°</text>`;
+            });
+            svg.innerHTML += gridLines;
+            
+            let pathD = `M ${coords[0].x} ${coords[0].y}`;
+            for (let i = 0; i < coords.length - 1; i++) {
+                const p0 = coords[i];
+                const p1 = coords[i+1];
+                const cpX1 = p0.x + (p1.x - p0.x) / 2;
+                const cpY1 = p0.y;
+                const cpX2 = p0.x + (p1.x - p0.x) / 2;
+                const cpY2 = p1.y;
+                pathD += ` C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${p1.x} ${p1.y}`;
+            }
+            
+            const areaD = `${pathD} L ${coords[coords.length - 1].x} ${height - paddingBottom} L ${coords[0].x} ${height - paddingBottom} Z`;
+            svg.innerHTML += `<path d="${areaD}" fill="url(#chartAreaGradient)" class="chart-area" />`;
+            svg.innerHTML += `<path d="${pathD}" fill="none" stroke="${strokeColor}" class="chart-line" />`;
+            
+            let pointsHtml = '';
+            coords.forEach((c) => {
+                pointsHtml += `
+                    <circle cx="${c.x}" cy="${c.y}" r="3.5" fill="${strokeColor}" stroke="${isDarkTheme ? '#141414' : '#ffffff'}" stroke-width="2" class="chart-point" />
+                `;
+            });
+            svg.innerHTML += pointsHtml;
+            svg.innerHTML += labels;
         }
 
         function updateUI(weatherData, aqiData, locationName) {
@@ -537,7 +885,27 @@
             document.getElementById('feelsLike').textContent = Math.round(current.apparent_temperature);
             document.getElementById('humidity').textContent = current.relative_humidity_2m;
             document.getElementById('windSpeed').textContent = Math.round(current.wind_speed_10m);
+            document.getElementById('precipitation').textContent = current.precipitation !== undefined ? current.precipitation.toFixed(1) : '0.0';
             
+            // Sunrise and Sunset
+            document.getElementById('sunriseTime').textContent = formatTimeString(daily.sunrise[0]);
+            document.getElementById('sunsetTime').textContent = formatTimeString(daily.sunset[0]);
+
+            // UV Index
+            const uvVal = daily.uv_index_max ? daily.uv_index_max[0] : null;
+            const uvValEl = document.getElementById('uvIndex');
+            const uvBadgeEl = document.getElementById('uvBadge');
+            if (uvVal !== null) {
+                const uvInfo = getUVInfo(uvVal);
+                uvValEl.textContent = uvVal.toFixed(1);
+                uvBadgeEl.textContent = uvInfo.label;
+                uvBadgeEl.className = `text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${uvInfo.class}`;
+                uvBadgeEl.classList.remove('hidden');
+            } else {
+                uvValEl.textContent = '--';
+                uvBadgeEl.classList.add('hidden');
+            }
+
             // AQI
             const aqi = aqiData?.current?.us_aqi;
             const aqiValueEl = document.getElementById('aqiValue');
@@ -554,13 +922,40 @@
                 aqiBadgeEl.className = 'aqi-badge text-xs px-2 py-0.5 rounded-full font-medium';
             }
 
-            // Hourly
+            // Calculate current index for hourly forecast
+            const nowMs = Date.now();
+            let currentStartIndex = 0;
+            let minDiff = Infinity;
+            for (let i = 0; i < hourly.time.length; i++) {
+                const diff = Math.abs(new Date(hourly.time[i]).getTime() - nowMs);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    currentStartIndex = i;
+                }
+            }
+
+            // Chart hourly forecast
+            const chartPoints = [];
+            for (let i = 0; i < 8; i++) {
+                const idx = currentStartIndex + i;
+                if (idx >= hourly.time.length) break;
+                chartPoints.push({
+                    time: new Date(hourly.time[idx]),
+                    temp: Math.round(hourly.temperature_2m[idx]),
+                    code: hourly.weather_code[idx],
+                    precipProb: hourly.precipitation_probability ? hourly.precipitation_probability[idx] : 0
+                });
+            }
+            currentHourlyData = chartPoints;
+            drawTemperatureChart(chartPoints);
+            document.getElementById('hourlyChartContainer').classList.remove('hidden');
+
+            // Hourly horizontal cards list
             const hourlyEl = document.getElementById('hourlyForecast');
             hourlyEl.innerHTML = '';
-            const currentHour = new Date().getHours();
             
             for (let i = 0; i < 12; i++) {
-                const idx = currentHour + i;
+                const idx = currentStartIndex + i;
                 if (idx >= hourly.time.length) break;
                 
                 const time = new Date(hourly.time[idx]);
@@ -579,7 +974,7 @@
                 `;
             }
 
-            // Daily
+            // Daily forecast
             const dailyEl = document.getElementById('dailyForecast');
             dailyEl.innerHTML = '';
             const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -695,9 +1090,7 @@
                 `;
             }).join('');
 
-            // Add click and touch handlers
             suggestionsListEl.querySelectorAll('.suggestion-item').forEach(item => {
-                // Mouse click
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -705,7 +1098,6 @@
                     selectSuggestion(suggestions[idx]);
                 });
                 
-                // Touch support for mobile
                 item.addEventListener('touchend', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -713,7 +1105,6 @@
                     selectSuggestion(suggestions[idx]);
                 });
 
-                // Mouse hover highlight
                 item.addEventListener('mouseenter', () => {
                     selectedIndex = parseInt(item.dataset.index);
                     updateSuggestionHighlight();
@@ -733,8 +1124,108 @@
             const locationName = `${loc.name}, ${loc.country}`;
             searchInput.value = loc.name;
             hideSuggestions();
+            addToRecent({ name: locationName, lat: loc.latitude, lon: loc.longitude });
             showLoading();
             fetchWeather(loc.latitude, loc.longitude, locationName);
+        }
+
+        // Recent Searches & Favorite Cities Logic
+        function renderRecentAndFavorites() {
+            const favorites = JSON.parse(localStorage.getItem('favoriteCities') || '[]');
+            const recents = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+            
+            const savedLocations = document.getElementById('savedLocations');
+            const favoritesContainer = document.getElementById('favoritesContainer');
+            const favoritesList = document.getElementById('favoritesList');
+            const recentsContainer = document.getElementById('recentsContainer');
+            const recentsList = document.getElementById('recentsList');
+            
+            if (favorites.length === 0 && recents.length === 0) {
+                savedLocations.classList.add('hidden');
+                return;
+            }
+            
+            savedLocations.classList.remove('hidden');
+            
+            if (favorites.length > 0) {
+                favoritesContainer.classList.remove('hidden');
+                favoritesList.innerHTML = favorites.map(city => `
+                    <div class="location-badge" onclick="loadSavedLocation('${city.name}', ${city.lat}, ${city.lon})">
+                        ⭐ ${city.name.split(',')[0]}
+                        <span class="remove-btn" onclick="removeFavorite(event, '${city.name}')">×</span>
+                    </div>
+                `).join('');
+            } else {
+                favoritesContainer.classList.add('hidden');
+            }
+            
+            if (recents.length > 0) {
+                recentsContainer.classList.remove('hidden');
+                recentsList.innerHTML = recents.map(city => `
+                    <div class="location-badge" onclick="loadSavedLocation('${city.name}', ${city.lat}, ${city.lon})">
+                        🕒 ${city.name.split(',')[0]}
+                        <span class="remove-btn" onclick="removeRecent(event, '${city.name}')">×</span>
+                    </div>
+                `).join('');
+            } else {
+                recentsContainer.classList.add('hidden');
+            }
+        }
+
+        function addToRecent(city) {
+            let recents = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+            recents = recents.filter(c => c.name.toLowerCase() !== city.name.toLowerCase());
+            recents.unshift(city);
+            if (recents.length > 5) recents.pop();
+            localStorage.setItem('recentSearches', JSON.stringify(recents));
+            renderRecentAndFavorites();
+        }
+
+        function isFavorite(name) {
+            const favorites = JSON.parse(localStorage.getItem('favoriteCities') || '[]');
+            return favorites.some(c => c.name.toLowerCase() === name.toLowerCase());
+        }
+
+        function toggleFavoriteCurrent() {
+            if (!currentCity.name) return;
+            let favorites = JSON.parse(localStorage.getItem('favoriteCities') || '[]');
+            const index = favorites.findIndex(c => c.name.toLowerCase() === currentCity.name.toLowerCase());
+            
+            const btn = document.getElementById('favoriteBtn');
+            if (index > -1) {
+                favorites.splice(index, 1);
+                btn.classList.remove('favorite-active');
+            } else {
+                favorites.push({ name: currentCity.name, lat: currentCity.lat, lon: currentCity.lon });
+                btn.classList.add('favorite-active');
+            }
+            localStorage.setItem('favoriteCities', JSON.stringify(favorites));
+            renderRecentAndFavorites();
+        }
+
+        function removeFavorite(e, name) {
+            e.stopPropagation();
+            let favorites = JSON.parse(localStorage.getItem('favoriteCities') || '[]');
+            favorites = favorites.filter(c => c.name !== name);
+            localStorage.setItem('favoriteCities', JSON.stringify(favorites));
+            
+            if (currentCity.name === name) {
+                document.getElementById('favoriteBtn').classList.remove('favorite-active');
+            }
+            renderRecentAndFavorites();
+        }
+
+        function removeRecent(e, name) {
+            e.stopPropagation();
+            let recents = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+            recents = recents.filter(c => c.name !== name);
+            localStorage.setItem('recentSearches', JSON.stringify(recents));
+            renderRecentAndFavorites();
+        }
+
+        function loadSavedLocation(name, lat, lon) {
+            showLoading();
+            fetchWeather(lat, lon, name);
         }
 
         function hideSuggestions() {
@@ -742,6 +1233,9 @@
             suggestions = [];
             selectedIndex = -1;
         }
+
+        // Initial setup
+        renderRecentAndFavorites();
     </script>
 </body>
 </html>
